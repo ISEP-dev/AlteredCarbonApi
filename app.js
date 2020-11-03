@@ -36,6 +36,42 @@ app.post('/remove/:stackId', (req, res) => {
     res.status(204).end()
 })
 
+app.put('/implant/:stackId/:envelopeId?', (req, res) => {
+    const stackId = parseInt(req.params.stackId)
+    const envelopeId = parseInt(req.params.envelopeId)
+
+    const existantStack = getClinic().stacks.find(stack => stack.id === stackId);
+    if (!existantStack) {
+        res.status(400).end()
+
+    }
+    if(!!envelopeId) {
+        const existantEnvelope = getClinic().envelopes.find(envelope => envelope.id === envelopeId);
+        if (!existantEnvelope) {
+            res.status(404).end()
+        }
+        getClinic().assignStackToEnvelope(stackId, envelopeId)
+        res.status(204).end()
+    } else {
+        const firstAvailableEnvelope = getClinic().envelopes.find(envelope => envelope.idStack === null)
+        if (!!firstAvailableEnvelope) {
+            getClinic().assignStackToEnvelope(stackId, firstAvailableEnvelope.id)
+            res.status(204).end()
+        } else {
+            res.status(400).end()
+        }
+    }
+})
+
+app.post('/kill/:envelopeId', (req, res) => {
+    const envelopeId = parseInt(req.params.envelopeId)
+    if (!!envelopeId) {
+        getClinic().killEnvelope(envelopeId)
+        res.status(204).end()
+    }
+    res.status(400).end()
+})
+
 app.delete('/truedeath/:stackId' ,(req, res) => {
     const idStack = parseInt(req.params.stackId);
     const statusCodeRetourned = getClinic().destroyStack(idStack)
