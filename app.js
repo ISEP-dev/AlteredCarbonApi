@@ -24,4 +24,23 @@ app.get('/digitize', (req, res) => {
     res.status(200).set({ 'Content-Type': 'application/json' }).json(createdElements)
 })
 
+app.post('/remove/:stackId', (req, res) => {
+
+    const stackId = req.params.stackId;
+    const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(stackId))
+
+    if (!existedStackFound || !existedStackFound.idEnvelope) {
+        res.status(400).end()
+    }
+
+    const envelopeAssigned = getClinic().envelopes.find(
+        e => e.id === existedStackFound.idEnvelope
+    )
+
+    envelopeAssigned.idStack = null
+    existedStackFound.idEnvelope = null
+
+    res.status(204).end()
+})
+
 export default app
