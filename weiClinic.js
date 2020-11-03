@@ -24,7 +24,7 @@ class WeiClinic {
     }
 
     assignStackToEnvelope(idStack, idEnvelope) {
-
+        this.envelopes.find(envelope => envelope.id === idEnvelope).idStack = idStack
     }
 
     removeStackFromEnvelope(idStack, idEnvelope) {
@@ -33,7 +33,9 @@ class WeiClinic {
     }
 
     killEnvelope(idEnvelope) {
-
+        const stackId = this.envelopes.find(envelope => envelope.id === idEnvelope).idStack
+        this.stacks.find(stack => stack.id === stackId).idEnvelope = null
+        this.envelopes = this.envelopes.filter((envelope => envelope.id !== idEnvelope))
     }
 
     destroyStack(idStack) {
