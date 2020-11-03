@@ -28,7 +28,8 @@ class WeiClinic {
     }
 
     removeStackFromEnvelope(idStack, idEnvelope) {
-
+        const envelopeAssigned = this.envelopes.find(e => e.id === idEnvelope)
+        envelopeAssigned.idStack = null
     }
 
     killEnvelope(idEnvelope) {
@@ -36,7 +37,17 @@ class WeiClinic {
     }
 
     destroyStack(idStack) {
+        const existedStackFound = this.stacks.find(s => s.id === idStack)
+        if (!existedStackFound) {
+            return 400;
+        }
 
+        this.stacks = this.stacks.filter(s => s.id !== idStack)
+        if (!!existedStackFound.idEnvelope) {
+            this.envelopes = this.envelopes.filter(e => e.id !== existedStackFound.idEnvelope)
+        }
+
+        return 204;
     }
 }
 

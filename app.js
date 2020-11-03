@@ -14,11 +14,32 @@ app.use(function (_req, res, next) {
 })
 
 app.get('/digitize', (req, res) => {
-    // Retrieve gender, age and name
+    const gender = req.query.gender
+    const age = req.query.age
+    const name = req.query.name
 
     const createdElements = getClinic().create(gender, name, age)
 
     res.status(200).set({ 'Content-Type': 'application/json' }).json(createdElements)
+})
+
+app.post('/remove/:stackId', (req, res) => {
+    const idStack = parseInt(req.params.stackId);
+    const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(idStack))
+
+    if (!existedStackFound || !existedStackFound.idEnvelope) {
+        res.status(400).end()
+    }
+
+    getClinic().removeStackFromEnvelope(existedStackFound.id, existedStackFound.idEnvelope)
+    existedStackFound.idEnvelope = null
+    res.status(204).end()
+})
+
+app.delete('/truedeath/:stackId' ,(req, res) => {
+    const idStack = parseInt(req.params.stackId);
+    const statusCodeRetourned = getClinic().destroyStack(idStack)
+    res.status(statusCodeRetourned).end()
 })
 
 export default app
