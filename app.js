@@ -25,21 +25,26 @@ app.get('/digitize', (req, res) => {
 })
 
 app.post('/remove/:stackId', (req, res) => {
-
-    const stackId = req.params.stackId;
-    const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(stackId))
+    const idStack = req.params.stackId;
+    const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(idStack))
 
     if (!existedStackFound || !existedStackFound.idEnvelope) {
         res.status(400).end()
     }
 
-    const envelopeAssigned = getClinic().envelopes.find(
-        e => e.id === existedStackFound.idEnvelope
-    )
+    getClinic().removeStackFromEnvelope(existedStackFound.id, existedStackFound.idEnvelope)
+    res.status(204).end()
+})
 
-    envelopeAssigned.idStack = null
-    existedStackFound.idEnvelope = null
+app.delete('/truedeath/:stackId' ,(req, res) => {
+    const idStack = req.params.stackId;
+    const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(idStack))
 
+    if (!existedStackFound) {
+        res.status(400).end()
+    }
+
+    getClinic().destroyStack(existedStackFound.id)
     res.status(204).end()
 })
 
