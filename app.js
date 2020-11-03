@@ -15,7 +15,7 @@ app.use(function (_req, res, next) {
 
 app.get('/digitize', (req, res) => {
     const gender = req.query.gender
-    const age = req.query.age
+    const age = parseInt(req.query.age)
     const name = req.query.name
 
     const createdElements = getClinic().create(gender, name, age)
