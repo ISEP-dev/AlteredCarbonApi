@@ -14,7 +14,6 @@ app.use(function (_req, res, next) {
 })
 
 app.get('/digitize', (req, res) => {
-
     const gender = req.query.gender
     const age = req.query.age
     const name = req.query.name
@@ -25,7 +24,7 @@ app.get('/digitize', (req, res) => {
 })
 
 app.post('/remove/:stackId', (req, res) => {
-    const idStack = req.params.stackId;
+    const idStack = parseInt(req.params.stackId);
     const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(idStack))
 
     if (!existedStackFound || !existedStackFound.idEnvelope) {
@@ -33,19 +32,14 @@ app.post('/remove/:stackId', (req, res) => {
     }
 
     getClinic().removeStackFromEnvelope(existedStackFound.id, existedStackFound.idEnvelope)
+    existedStackFound.idEnvelope = null
     res.status(204).end()
 })
 
 app.delete('/truedeath/:stackId' ,(req, res) => {
-    const idStack = req.params.stackId;
-    const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(idStack))
-
-    if (!existedStackFound) {
-        res.status(400).end()
-    }
-
-    getClinic().destroyStack(existedStackFound.id)
-    res.status(204).end()
+    const idStack = parseInt(req.params.stackId);
+    const statusCodeRetourned = getClinic().destroyStack(idStack)
+    res.status(statusCodeRetourned).end()
 })
 
 export default app
