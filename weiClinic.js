@@ -55,4 +55,4 @@ class WeiClinic {
 
 const weiClinic = new WeiClinic()
 
-export const getClinic = () => weiClinic
+export let getClinic = () => weiClinic
