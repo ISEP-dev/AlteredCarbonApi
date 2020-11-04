@@ -14,8 +14,15 @@ class WeiClinic {
         const newStack = new CorticalStack(stackId, realGender, name, age, envelopeId)
         const newEnvelope = new Envelope(envelopeId, realGender, age, stackId)
 
-        this.stacks.push(newStack)
-        this.envelopes.push(newEnvelope)
+        // It's better like this.. method push is deprecated.
+        this.stacks = [
+            ...this.stacks,
+            newStack
+        ]
+        this.envelopes = [
+            ...this.envelopes,
+            newEnvelope
+        ]
 
         return {
             corticalStack: newStack,
