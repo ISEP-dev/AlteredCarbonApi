@@ -43,8 +43,9 @@ app.put('/implant/:stackId/:envelopeId?', (req, res) => {
     const existantStack = getClinic().stacks.find(stack => stack.id === stackId);
     if (!existantStack) {
         res.status(400).end()
-
+        return
     }
+
     if(!!envelopeId) {
         const existantEnvelope = getClinic().envelopes.find(envelope => envelope.id === envelopeId);
         if (!existantEnvelope) {
