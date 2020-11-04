@@ -14,8 +14,15 @@ class WeiClinic {
         const newStack = new CorticalStack(stackId, realGender, name, age, envelopeId)
         const newEnvelope = new Envelope(envelopeId, realGender, age, stackId)
 
-        this.stacks.push(newStack)
-        this.envelopes.push(newEnvelope)
+        // It's better like this.. method push is deprecated.
+        this.stacks = [
+            ...this.stacks,
+            newStack
+        ]
+        this.envelopes = [
+            ...this.envelopes,
+            newEnvelope
+        ]
 
         return {
             corticalStack: newStack,
@@ -33,9 +40,13 @@ class WeiClinic {
     }
 
     killEnvelope(idEnvelope) {
-        const stackId = this.envelopes.find(envelope => envelope.id === idEnvelope).idStack
-        this.stacks.find(stack => stack.id === stackId).idEnvelope = null
+        const envelopeFound = this.envelopes.find(envelope => envelope.id === idEnvelope)
+        if (!envelopeFound) {
+            return 400;
+        }
+        this.stacks.find(stack => stack.id === envelopeFound.idStack).idEnvelope = null
         this.envelopes = this.envelopes.filter((envelope => envelope.id !== idEnvelope))
+        return 204
     }
 
     destroyStack(idStack) {
