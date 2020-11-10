@@ -15,6 +15,32 @@ class Dal {
     }
   }
 
+  async getAllStacksAsync() {
+    const connection = await this.connect()
+
+    try {
+      const [result] = await connection.query(`SELECT * FROM CorticalStacks`)
+      return result
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async getAllEnvelopesAsync() {
+    const connection = await this.connect()
+
+    try {
+      const [result] = await connection.query(`SELECT * FROM Envelopes`)
+      return result
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
   async createAsync(realGender, name, age) {
     const connection = await this.connect()
 
@@ -34,6 +60,55 @@ class Dal {
         corticalStackId: resultStack.insertId,
         envelopeId: resultEnvelope.insertId
       }
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async updateEnvelopeIdFromStackAsync(stackId, envelopeId) {
+    const connection = await this.connect()
+
+    try {
+      await connection.query(`UPDATE CorticalStacks SET idEnvelope=${envelopeId} WHERE id=${stackId}`)
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async updateStackIdFromEnvelopeAsync(stackId, envelopeId) {
+    const connection = await this.connect()
+
+    try {
+      await connection.query(`UPDATE Envelopes SET idStack=${stackId} WHERE id=${envelopeId}`)
+
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async removeStackByIdAsync(idStack) {
+    const connection = await this.connect()
+
+    try {
+      await connection.query(`DELETE FROM CorticalStacks WHERE id=${idStack}`)
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async removeEnvelopeByIdAsync(idEnvelope) {
+    const connection = await this.connect()
+
+    try {
+      await connection.query(`DELETE FROM Envelopes WHERE id=${idEnvelope}`)
     } catch (err) {
       console.error(err.message)
     } finally {

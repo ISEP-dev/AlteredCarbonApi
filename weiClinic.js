@@ -26,37 +26,36 @@ class WeiClinic {
         }
     }
 
-    assignStackToEnvelope(idStack, idEnvelope) {
-        this.envelopes.find(envelope => envelope.id === idEnvelope).idStack = idStack
+    assignStackToEnvelope(stack, idEnvelope) {
+        this.envelopes.find(envelope => envelope.id === idEnvelope).idStack = stack.id
+        stack.idEnvelope = idEnvelope
     }
 
-    removeStackFromEnvelope(idStack, idEnvelope) {
-        const envelopeAssigned = this.envelopes.find(e => e.id === idEnvelope)
+    removeStackFromEnvelope(stack) {
+        const envelopeAssigned = this.envelopes.find(e => e.id === stack.idEnvelope)
         envelopeAssigned.idStack = null
+        stack.idEnvelope = null
     }
 
-    killEnvelope(idEnvelope) {
-        const envelopeFound = this.envelopes.find(envelope => envelope.id === idEnvelope)
-        if (!envelopeFound) {
-            return 400;
-        }
-        this.stacks.find(stack => stack.id === envelopeFound.idStack).idEnvelope = null
-        this.envelopes = this.envelopes.filter((envelope => envelope.id !== idEnvelope))
-        return 204
+    killEnvelope(envelope) {
+        this.stacks.find(stack => stack.id === envelope.idStack).idEnvelope = null
+
+        this.envelopes = this.envelopes.filter(e => e.id !== envelope.id)
     }
 
-    destroyStack(idStack) {
-        const existedStackFound = this.stacks.find(s => s.id === idStack)
-        if (!existedStackFound) {
-            return 400;
+    destroyStack(stack) {
+        this.stacks = this.stacks.filter(s => s.id !== stack.id)
+        if (!!stack.idEnvelope) {
+            this.envelopes = this.envelopes.filter(e => e.id !== stack.idEnvelope)
         }
+    }
 
-        this.stacks = this.stacks.filter(s => s.id !== idStack)
-        if (!!existedStackFound.idEnvelope) {
-            this.envelopes = this.envelopes.filter(e => e.id !== existedStackFound.idEnvelope)
-        }
+    findEnvelope(idEnvelope) {
+        return this.envelopes.find(e => e.id === parseInt(idEnvelope))
+    }
 
-        return 204;
+    findStack(idStack) {
+        return this.stacks.find(s => s.id === parseInt(idStack))
     }
 }
 
