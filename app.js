@@ -65,12 +65,17 @@ app.put('/implant/:stackId/:envelopeId?', (req, res) => {
     }
 })
 
-app.post('/kill/:envelopeId', (req, res) => {
+app.post('/kill/:envelopeId', async (req, res) => {
     const envelopeId = parseInt(req.params.envelopeId)
 
-    const statusCode = getClinic().killEnvelope(envelopeId)
+    const envelopeFound = getClinic().findEnvelope(envelopeId)
+    if (!envelopeFound) {
+        res.status(400).end()
+        return
+    }
 
-    res.status(statusCode).end()
+    await getClinicService().killEnvelopeAsync(envelopeFound)
+    res.status(204).end()
 })
 
 app.delete('/truedeath/:stackId' ,async (req, res) => {

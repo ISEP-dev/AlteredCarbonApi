@@ -22,6 +22,11 @@ class WeiClinicService {
         getClinic().removeStackFromEnvelope(stack)
     }
 
+    async killEnvelopeAsync(envelope) {
+        await this.dal.killEnvelopeAsync(envelope)
+        getClinic().killEnvelope(envelope)
+    }
+
     async destroyStackAsync(stack) {
         await this.dal.removeStackByIdAsync(stack.id)
 
