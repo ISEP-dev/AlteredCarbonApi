@@ -15,6 +15,45 @@ class Dal {
     }
   }
 
+  async getAllStacksAsync() {
+    const connection = await this.connect()
+
+    try {
+      const [result] = await connection.query(`SELECT * FROM CorticalStacks`)
+      return result
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async getAllEnvelopesAsync() {
+    const connection = await this.connect()
+
+    try {
+      const [result] = await connection.query(`SELECT * FROM Envelopes`)
+      return result
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async getStackById(stackId) {
+    const connection = await this.connect()
+
+    try {
+      const [result] = await connection.query(`SELECT * FROM CorticalStacks WHERE id=${stackId}`)
+      return result
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
   async createAsync(realGender, name, age) {
     const connection = await this.connect()
 
@@ -34,6 +73,20 @@ class Dal {
         corticalStackId: resultStack.insertId,
         envelopeId: resultEnvelope.insertId
       }
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async removeStackFromEnvelopeAsync(stackId, envelopeId) {
+    const connection = await this.connect()
+
+    try {
+      await connection.query(`UPDATE Envelopes SET idStack=NULL WHERE id=${envelopeId}`)
+      await connection.query(`UPDATE CorticalStacks SET idEnvelope=NULL WHERE id=${stackId}`)
+
     } catch (err) {
       console.error(err.message)
     } finally {

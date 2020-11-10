@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 
 import {getClinic} from './weiClinic'
 import Dal from "./dal";
+import {getClinicService} from "./weiClinicService";
 
 const app = express()
 
@@ -19,23 +20,21 @@ app.get('/digitize', async (req, res) => {
     const age = parseInt(req.query.age)
     const name = req.query.name
 
-    const dal = new Dal()
-    const {corticalStackId, envelopeId} = await dal.createAsync(gender, name, age)
-    const createdElements = getClinic().create(corticalStackId, envelopeId, gender, name, age)
-
+    const createdElements = await getClinicService().createAsync(gender, name, age)
     res.status(200).set({ 'Content-Type': 'application/json' }).json(createdElements)
 })
 
-app.post('/remove/:stackId', (req, res) => {
-    const idStack = parseInt(req.params.stackId);
-    const existedStackFound = getClinic().stacks.find(s => s.id === parseInt(idStack))
+app.post('/remove/:stackId', async (req, res) => {
+    const idStack = req.params.stackId;
+    const stackFound = getClinic().findStack(idStack);
+    console.log(stackFound)
 
-    if (!existedStackFound || !existedStackFound.idEnvelope) {
+    if (!stackFound || !stackFound.idEnvelope) {
         res.status(400).end()
+        return;
     }
 
-    getClinic().removeStackFromEnvelope(existedStackFound.id, existedStackFound.idEnvelope)
-    existedStackFound.idEnvelope = null
+    await getClinicService().removeStackFromEnvelopeAsync(stackFound)
     res.status(204).end()
 })
 

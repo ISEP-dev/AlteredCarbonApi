@@ -30,9 +30,10 @@ class WeiClinic {
         this.envelopes.find(envelope => envelope.id === idEnvelope).idStack = idStack
     }
 
-    removeStackFromEnvelope(idStack, idEnvelope) {
-        const envelopeAssigned = this.envelopes.find(e => e.id === idEnvelope)
+    removeStackFromEnvelope(stack) {
+        const envelopeAssigned = this.envelopes.find(e => e.id === stack.idEnvelope)
         envelopeAssigned.idStack = null
+        stack.idEnvelope = null
     }
 
     killEnvelope(idEnvelope) {
@@ -57,6 +58,11 @@ class WeiClinic {
         }
 
         return 204;
+    }
+
+    findStack(idStack) {
+        console.log(idStack);
+        return this.stacks.find(s => s.id === parseInt(idStack))
     }
 }
 
