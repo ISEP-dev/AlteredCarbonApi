@@ -8,13 +8,10 @@ class WeiClinic {
         this.stacks = []
     }
 
-    create(realGender, name, age) {
-        const stackId = getNewId(this.stacks)
-        const envelopeId = getNewId(this.envelopes)
+    create(stackId, envelopeId, realGender, name, age) {
         const newStack = new CorticalStack(stackId, realGender, name, age, envelopeId)
-        const newEnvelope = new Envelope(envelopeId, realGender, age, stackId)
+        const newEnvelope = new Envelope(envelopeId, realGender, age, stackId);
 
-        // It's better like this.. method push is deprecated.
         this.stacks = [
             ...this.stacks,
             newStack

@@ -2,6 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 
 import {getClinic} from './weiClinic'
+import Dal from "./dal";
 
 const app = express()
 
@@ -13,12 +14,14 @@ app.use(function (_req, res, next) {
     next()
 })
 
-app.get('/digitize', (req, res) => {
+app.get('/digitize', async (req, res) => {
     const gender = req.query.gender
     const age = parseInt(req.query.age)
     const name = req.query.name
 
-    const createdElements = getClinic().create(gender, name, age)
+    const dal = new Dal()
+    const {corticalStackId, envelopeId} = await dal.createAsync(gender, name, age)
+    const createdElements = getClinic().create(corticalStackId, envelopeId, gender, name, age)
 
     res.status(200).set({ 'Content-Type': 'application/json' }).json(createdElements)
 })
