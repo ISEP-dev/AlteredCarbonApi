@@ -29,8 +29,7 @@ app.post('/remove/:stackId', async (req, res) => {
     const stackFound = getClinic().findStack(idStack);
 
     if (!stackFound || !stackFound.idEnvelope) {
-        res.status(400).end()
-        return;
+        return res.status(400).end()
     }
 
     await getClinicService().removeStackFromEnvelopeAsync(stackFound)
@@ -69,8 +68,7 @@ app.post('/kill/:envelopeId', async (req, res) => {
 
     const envelopeFound = getClinic().findEnvelope(envelopeId)
     if (!envelopeFound) {
-        res.status(400).end()
-        return
+        return res.status(400).end()
     }
 
     await getClinicService().killEnvelopeAsync(envelopeFound)
@@ -82,8 +80,7 @@ app.delete('/truedeath/:stackId' ,async (req, res) => {
 
     const existedStackFound = getClinic().findStack(idStack)
     if (!existedStackFound) {
-        res.status(400).end()
-        return
+        return res.status(400).end()
     }
 
     await getClinicService().destroyStackAsync(existedStackFound)
