@@ -46,22 +46,14 @@ class WeiClinic {
         return 204
     }
 
-    destroyStack(idStack) {
-        const existedStackFound = this.stacks.find(s => s.id === idStack)
-        if (!existedStackFound) {
-            return 400;
+    destroyStack(stack) {
+        this.stacks = this.stacks.filter(s => s.id !== stack.id)
+        if (!!stack.idEnvelope) {
+            this.envelopes = this.envelopes.filter(e => e.id !== stack.idEnvelope)
         }
-
-        this.stacks = this.stacks.filter(s => s.id !== idStack)
-        if (!!existedStackFound.idEnvelope) {
-            this.envelopes = this.envelopes.filter(e => e.id !== existedStackFound.idEnvelope)
-        }
-
-        return 204;
     }
 
     findStack(idStack) {
-        console.log(idStack);
         return this.stacks.find(s => s.id === parseInt(idStack))
     }
 }

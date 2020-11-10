@@ -93,6 +93,30 @@ class Dal {
       connection.end()
     }
   }
+
+  async removeStackByIdAsync(idStack) {
+    const connection = await this.connect()
+
+    try {
+      await connection.query(`DELETE FROM CorticalStacks WHERE id=${idStack}`)
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
+
+  async removeEnvelopeByIdAsync(idEnvelope) {
+    const connection = await this.connect()
+
+    try {
+      await connection.query(`DELETE FROM Envelopes WHERE id=${idEnvelope}`)
+    } catch (err) {
+      console.error(err.message)
+    } finally {
+      connection.end()
+    }
+  }
 }
 
 export default Dal

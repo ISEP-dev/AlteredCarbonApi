@@ -21,6 +21,15 @@ class WeiClinicService {
         await this.dal.removeStackFromEnvelopeAsync(stack.id, stack.idEnvelope)
         getClinic().removeStackFromEnvelope(stack)
     }
+
+    async destroyStackAsync(stack) {
+        await this.dal.removeStackByIdAsync(stack.id)
+
+        if (!!stack.idEnvelope) {
+            await this.dal.removeEnvelopeByIdAsync(stack.idEnvelope)
+        }
+        getClinic().destroyStack(stack);
+    }
 }
 
 const weiClinicService = new WeiClinicService()

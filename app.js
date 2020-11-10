@@ -27,7 +27,6 @@ app.get('/digitize', async (req, res) => {
 app.post('/remove/:stackId', async (req, res) => {
     const idStack = req.params.stackId;
     const stackFound = getClinic().findStack(idStack);
-    console.log(stackFound)
 
     if (!stackFound || !stackFound.idEnvelope) {
         res.status(400).end()
@@ -74,10 +73,17 @@ app.post('/kill/:envelopeId', (req, res) => {
     res.status(statusCode).end()
 })
 
-app.delete('/truedeath/:stackId' ,(req, res) => {
+app.delete('/truedeath/:stackId' ,async (req, res) => {
     const idStack = parseInt(req.params.stackId);
-    const statusCodeRetourned = getClinic().destroyStack(idStack)
-    res.status(statusCodeRetourned).end()
+
+    const existedStackFound = getClinic().findStack(idStack)
+    if (!existedStackFound) {
+        res.status(400).end()
+        return
+    }
+
+    await getClinicService().destroyStackAsync(existedStackFound)
+    res.status(204).end()
 })
 
 export default app
