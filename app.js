@@ -2,7 +2,6 @@ import express from 'express'
 import bodyParser from 'body-parser'
 
 import {getClinic} from './weiClinic'
-import Dal from "./dal";
 import {getClinicService} from "./weiClinicService";
 
 const app = express()
@@ -25,8 +24,8 @@ app.get('/digitize', async (req, res) => {
 })
 
 app.post('/remove/:stackId', async (req, res) => {
-    const idStack = req.params.stackId;
-    const stackFound = getClinic().findStack(idStack);
+    const stackId = req.params.stackId;
+    const stackFound = getClinic().findStack(stackId);
 
     if (!stackFound || !stackFound.idEnvelope) {
         return res.status(400).end()
@@ -76,9 +75,9 @@ app.post('/kill/:envelopeId', async (req, res) => {
 })
 
 app.delete('/truedeath/:stackId' ,async (req, res) => {
-    const idStack = parseInt(req.params.stackId);
+    const stackId = parseInt(req.params.stackId);
 
-    const existedStackFound = getClinic().findStack(idStack)
+    const existedStackFound = getClinic().findStack(stackId)
     if (!existedStackFound) {
         return res.status(400).end()
     }
