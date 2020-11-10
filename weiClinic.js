@@ -26,8 +26,9 @@ class WeiClinic {
         }
     }
 
-    assignStackToEnvelope(idStack, idEnvelope) {
-        this.envelopes.find(envelope => envelope.id === idEnvelope).idStack = idStack
+    assignStackToEnvelope(stack, idEnvelope) {
+        this.envelopes.find(envelope => envelope.id === idEnvelope).idStack = stack.id
+        stack.idEnvelope = idEnvelope
     }
 
     removeStackFromEnvelope(stack) {

@@ -18,13 +18,23 @@ class WeiClinicService {
     }
 
     async removeStackFromEnvelopeAsync(stack) {
-        await this.dal.removeStackFromEnvelopeAsync(stack.id, stack.idEnvelope)
+        await this.dal.updateStackIdFromEnvelopeAsync(null, stack.idEnvelope)
+        await this.dal.updateEnvelopeIdFromStackAsync(stack.id, null)
+
         getClinic().removeStackFromEnvelope(stack)
     }
 
     async killEnvelopeAsync(envelope) {
-        await this.dal.killEnvelopeAsync(envelope)
+        await this.dal.removeEnvelopeByIdAsync(envelope.id)
+        await this.dal.updateEnvelopeIdFromStackAsync(envelope.idStack, null)
+
         getClinic().killEnvelope(envelope)
+    }
+
+    async assignStackToEnvelopeAsync(stack, envelopeId) {
+        await this.dal.updateStackIdFromEnvelopeAsync(stack.id, envelopeId)
+        await this.dal.updateEnvelopeIdFromStackAsync(stack.id, envelopeId)
+        getClinic().assignStackToEnvelope(stack, envelopeId)
     }
 
     async destroyStackAsync(stack) {

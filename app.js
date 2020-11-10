@@ -37,32 +37,31 @@ app.post('/remove/:stackId', async (req, res) => {
     res.status(204).end()
 })
 
-app.put('/implant/:stackId/:envelopeId?', (req, res) => {
+app.put('/implant/:stackId/:envelopeId?', async (req, res) => {
     const stackId = parseInt(req.params.stackId)
+    const existingStack = getClinic().findStack(stackId)
     const envelopeId = parseInt(req.params.envelopeId)
 
-    const existantStack = getClinic().stacks.find(stack => stack.id === stackId);
-    if (!existantStack) {
-        res.status(400).end()
-        return
+    if (!existingStack) {
+        return res.status(400).end()
     }
 
     if(!!envelopeId) {
-        const existantEnvelope = getClinic().envelopes.find(envelope => envelope.id === envelopeId);
-        if (!existantEnvelope) {
-            res.status(404).end()
+        if (!getClinic().findEnvelope(envelopeId)) {
+            return res.status(404).end()
         }
-        getClinic().assignStackToEnvelope(stackId, envelopeId)
-        res.status(204).end()
-    } else {
-        const firstAvailableEnvelope = getClinic().envelopes.find(envelope => envelope.idStack === null)
-        if (!!firstAvailableEnvelope) {
-            getClinic().assignStackToEnvelope(stackId, firstAvailableEnvelope.id)
-            res.status(204).end()
-        } else {
-            res.status(400).end()
-        }
+
+        await getClinicService().assignStackToEnvelopeAsync(existingStack, envelopeId)
+        return res.status(204).end()
     }
+
+    const firstAvailableEnvelope = getClinic().envelopes.find(envelope => envelope.idStack === null)
+    if (!firstAvailableEnvelope) {
+        return res.status(400).end()
+    }
+
+    await getClinicService().assignStackToEnvelopeAsync(existingStack, firstAvailableEnvelope.id)
+    res.status(204).end()
 })
 
 app.post('/kill/:envelopeId', async (req, res) => {

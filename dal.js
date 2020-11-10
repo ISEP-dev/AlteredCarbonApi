@@ -67,12 +67,11 @@ class Dal {
     }
   }
 
-  async killEnvelopeAsync(envelope) {
+  async updateEnvelopeIdFromStackAsync(stackId, envelopeId) {
     const connection = await this.connect()
 
     try {
-      await this.removeEnvelopeByIdAsync(envelope.id)
-      await this.removeEnvelopeFromStackAsync(envelope.idStack)
+      await connection.query(`UPDATE CorticalStacks SET idEnvelope=${envelopeId} WHERE id=${stackId}`)
     } catch (err) {
       console.error(err.message)
     } finally {
@@ -80,26 +79,11 @@ class Dal {
     }
   }
 
-  async removeEnvelopeFromStackAsync(idStack) {
+  async updateStackIdFromEnvelopeAsync(stackId, envelopeId) {
     const connection = await this.connect()
 
     try {
-      await connection.query(`UPDATE CorticalStacks SET idEnvelope=NULL WHERE id=${idStack}`)
-
-    } catch (err) {
-      console.error(err.message)
-    } finally {
-      connection.end()
-    }
-  }
-
-
-  async removeStackFromEnvelopeAsync(stackId, envelopeId) {
-    const connection = await this.connect()
-
-    try {
-      await connection.query(`UPDATE Envelopes SET idStack=NULL WHERE id=${envelopeId}`)
-      await this.removeEnvelopeFromStackAsync(stackId)
+      await connection.query(`UPDATE Envelopes SET idStack=${stackId} WHERE id=${envelopeId}`)
 
     } catch (err) {
       console.error(err.message)
