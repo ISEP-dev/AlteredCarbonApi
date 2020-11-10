@@ -1,6 +1,7 @@
 import {getClinic} from "../weiClinic";
 
 const ENVELOPE_ID = 1;
+const ANOTHER_ENVELOPE_ID = 2;
 const STACK_ID = 1;
 const STACK_NAME = "Toto";
 const GENDER = "M";
@@ -23,7 +24,8 @@ const mockEnvelope = {
 
 const mockEnvelopeWithoutStackId = {
     ...mockEnvelope,
-    idStack: null
+    idStack: null,
+    id: ANOTHER_ENVELOPE_ID
 }
 
 beforeEach(() => {
@@ -73,7 +75,20 @@ describe('WeiClinic actions :', () => {
         expect(mockStackWithoutEnvelope.idEnvelope).toBeNull()
     })
 
-    it('Kill envelope', (done) => {})
+    it('Kill envelope', () => {
+        getClinic().killEnvelope(mockEnvelope)
 
-    it('Destroy stack', (done) => {})
+        const mockStackWithEnvelopeId = getClinic().findStack(mockEnvelope.idStack)
+
+        expect(mockStackWithEnvelopeId.idEnvelope).toBeNull()
+        expect(getClinic().envelopes.includes(e => e.id === mockEnvelope.id)).toBeFalsy()
+    })
+
+    it('Destroy stack', () => {
+        getClinic().destroyStack(mockStack)
+
+        expect(getClinic().stacks.includes(s => s.id === mockStack.id)).toBeFalsy()
+        expect(getClinic().envelopes.includes(e => e.id === mockStack.idEnvelope)).toBeFalsy()
+
+    })
 })
