@@ -1,4 +1,3 @@
-import { getNewId } from './idHelper'
 import CorticalStack from './corticalStack'
 import Envelope from './Envelope'
 
