@@ -6,15 +6,19 @@ const EXPECTED_ENVELOPE_ID = 1;
 const EXPECTED_STACK_ID = 1;
 const EXPECTED_FAKE_STACK_ID = 99;
 
+const mockFindStack = jest.fn()
+const fakeStack = {
+    id: EXPECTED_STACK_ID,
+    idEnvelope: EXPECTED_ENVELOPE_ID
+}
+
 beforeEach(() => {
     clinicDependency.getClinic = jest.fn().mockReturnValue({
         stacks: [
-            {
-                id: EXPECTED_STACK_ID,
-                idEnvelope: EXPECTED_ENVELOPE_ID
-            }
+            fakeStack
         ],
-        removeStackFromEnvelope: jest.fn()
+        removeStackFromEnvelope: jest.fn(),
+        findStack: mockFindStack
     })
 })
 
@@ -22,6 +26,7 @@ describe('Remove action', () => {
     it('Removing a stack is ok', (done) => {
         const queryStackId = EXPECTED_STACK_ID;
 
+        mockFindStack.mockReturnValue(fakeStack)
         const removeStackFromEnvelope = jest.spyOn(clinicDependency.getClinic(), 'removeStackFromEnvelope')
 
         request(app)
@@ -29,12 +34,14 @@ describe('Remove action', () => {
             .expect(204)
             .expect(() => {
                 expect(removeStackFromEnvelope).toHaveBeenCalledTimes(1)
-                expect(removeStackFromEnvelope).toHaveBeenCalledWith(EXPECTED_STACK_ID, EXPECTED_ENVELOPE_ID)
+                expect(removeStackFromEnvelope).toHaveBeenCalledWith(fakeStack)
             }).end(done)
     })
 
     it('Removing a stack failed', (done) => {
         const queryStackId = EXPECTED_FAKE_STACK_ID;
+
+        mockFindStack.mockReturnValue(null)
 
         const removeStackFromEnvelope = jest.spyOn(clinicDependency.getClinic(), 'removeStackFromEnvelope')
 
