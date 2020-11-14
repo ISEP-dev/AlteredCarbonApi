@@ -2,19 +2,23 @@ import request from 'supertest'
 import app from '../app'
 
 import * as clinicDependency from '../weiClinic'
+import * as weiClinicServiceDependency from "../weiClinicService";
 
 const ENVELOPE_ID = 1
 const FAKE_ENVELOPE_ID = 88
 const STACK_ID = 1
 
-const mockFindEnvelope = jest.fn();
 const mockKillEnvelope = jest.fn();
+const mockFindEnvelope = jest.fn();
 const fakeEnvelope = {
     id: ENVELOPE_ID,
     idStack: STACK_ID
 }
 
 beforeEach(() => {
+    weiClinicServiceDependency.getClinicService = jest.fn().mockReturnValue({
+        dal: jest.fn().mockImplementation()
+    }),
     clinicDependency.getClinic = jest.fn().mockReturnValue({
         envelopes: [fakeEnvelope],
         stacks: [ {
@@ -31,19 +35,27 @@ describe('Kill action', () => {
         const expectedResponse = 204
 
         mockFindEnvelope.mockReturnValue(fakeEnvelope)
-        const killEnvelope = jest.fn().mockReturnValue(expectedResponse)
-        clinicDependency.getClinic.mockReturnValue({
-            killEnvelope,
-            findEnvelope: mockFindEnvelope
-        })
-
 
         request(app)
             .post(`/kill/${ENVELOPE_ID}`)
             .expect(expectedResponse)
             .expect(() => {
-                expect(killEnvelope).toHaveBeenCalledTimes(1)
-                expect(killEnvelope).toHaveBeenCalledWith(fakeEnvelope)
+                expect(mockKillEnvelope).toHaveBeenCalledTimes(1)
+                expect(mockKillEnvelope).toHaveBeenCalledWith(fakeEnvelope)
+            })
+            .end(done)
+    });
+    it('When data is fine', (done) => {
+        const expectedResponse = 204
+
+        mockFindEnvelope.mockReturnValue(fakeEnvelope)
+
+        request(app)
+            .post(`/kill/${ENVELOPE_ID}`)
+            .expect(expectedResponse)
+            .expect(() => {
+                expect(mockKillEnvelope).toHaveBeenCalledTimes(1)
+                expect(mockKillEnvelope).toHaveBeenCalledWith(fakeEnvelope)
             })
             .end(done)
     });

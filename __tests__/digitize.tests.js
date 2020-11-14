@@ -50,7 +50,13 @@ describe('Digitize action', () => {
             .expect(response => {
                 expect(response.body).toEqual(expectedResponseBody)
                 expect(create).toHaveBeenCalledTimes(1)
-                expect(create).toHaveBeenCalledWith(GENDER, NAME, AGE)
+                expect(create).toHaveBeenCalledWith(
+                    expectedResponseBody.corticalStack.id,
+                    expectedResponseBody.envelope.id,
+                    GENDER,
+                    NAME,
+                    AGE
+                )
             })
             .end(done)
     })
