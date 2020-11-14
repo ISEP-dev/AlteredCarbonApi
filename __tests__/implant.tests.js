@@ -23,6 +23,15 @@ const fakeAvailableEnvelope = {
     id: AVAILABLE_ENVELOPE_ID,
     idStack: null
 }
+jest.mock('../dal.js', () => {
+    return jest.fn().mockImplementation(() => ({
+        getAllStacksAsync: jest.fn().mockReturnValue(new Promise(() => [])),
+        getAllEnvelopesAsync: jest.fn().mockReturnValue(new Promise(() =>[])),
+        updateStackIdFromEnvelopeAsync: jest.fn(),
+        updateEnvelopeIdFromStackAsync: jest.fn()
+    }))
+})
+
 
 beforeEach(() => {
     clinicDependency.getClinic = jest.fn().mockReturnValue({
@@ -35,46 +44,34 @@ beforeEach(() => {
 })
 
 describe('Implant action', () => {
-    it('When stackId is not fine', (done) => {
+    it('When stackId is not fine', async () => {
 
         mockFindStack.mockReturnValue(null)
         const assignStackToEnvelope = jest.spyOn(clinicDependency.getClinic(), 'assignStackToEnvelope');
 
-        request(app)
-            .put(`/implant/${FAKE_STACK_ID}`)
-            .expect(400)
-            .expect(() => {
-                expect(assignStackToEnvelope).not.toHaveBeenCalled()
-            })
-            .end(done)
+        const res = await request(app).put(`/implant/${FAKE_STACK_ID}`)
+        expect(res.status).toBe(400)
+        expect(assignStackToEnvelope).not.toHaveBeenCalled()
     });
-    it('When stackId & envelopId are fine', (done) => {
+    it('When stackId & envelopId are fine', async () => {
 
         mockFindStack.mockReturnValue(fakeStack)
         mockFindEnvelope.mockReturnValue(fakeEnvelope)
         const assignStackToEnvelope = jest.spyOn(clinicDependency.getClinic(), 'assignStackToEnvelope');
 
-        request(app)
-            .put(`/implant/${STACK_ID}/${ENVELOPE_ID}`)
-            .expect(204)
-            .expect(() => {
-                expect(assignStackToEnvelope).toHaveBeenCalledTimes(1)
-                expect(assignStackToEnvelope).toHaveBeenCalledWith(fakeStack, ENVELOPE_ID)
-            })
-            .end(done)
+        const res = await request(app).put(`/implant/${STACK_ID}/${ENVELOPE_ID}`)
+        expect(res.status).toBe(204)
+        expect(assignStackToEnvelope).toHaveBeenCalledTimes(1)
+        expect(assignStackToEnvelope).toHaveBeenCalledWith(fakeStack, ENVELOPE_ID)
     });
-    it('When you only have stackId and no available envelopeId', (done) => {
+    it('When you only have stackId and no available envelopeId', async () => {
         const assignStackToEnvelope = jest.spyOn(clinicDependency.getClinic(), 'assignStackToEnvelope');
 
-        request(app)
-            .put(`/implant/${STACK_ID}`)
-            .expect(400)
-            .expect(() => {
-                expect(assignStackToEnvelope).not.toHaveBeenCalled()
-            })
-            .end(done)
+        const res = await request(app).put(`/implant/${STACK_ID}`)
+        expect(res.status).toBe(400)
+        expect(assignStackToEnvelope).not.toHaveBeenCalled()
     });
-    it('When you only have stackId and available envelopeId', (done) => {
+    it('When you only have stackId and available envelopeId', async () => {
         const assignStackToEnvelope = jest.spyOn(clinicDependency.getClinic(), 'assignStackToEnvelope');
 
         mockFindStack.mockReturnValue(fakeStack)
@@ -92,14 +89,10 @@ describe('Implant action', () => {
             ]
         })
 
-        request(app)
-            .put(`/implant/${STACK_ID}`)
-            .expect(204)
-            .expect(() => {
-                expect(assignStackToEnvelope).toHaveBeenCalledTimes(1)
-                expect(assignStackToEnvelope).toHaveBeenCalledWith(fakeStack, AVAILABLE_ENVELOPE_ID)
-            })
-            .end(done)
+        const res = await request(app).put(`/implant/${STACK_ID}`)
+        expect(res.status).toBe(204)
+        expect(assignStackToEnvelope).toHaveBeenCalledTimes(1)
+        expect(assignStackToEnvelope).toHaveBeenCalledWith(fakeStack, AVAILABLE_ENVELOPE_ID)
     });
 
 })
