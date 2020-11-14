@@ -7,6 +7,17 @@ const AGE = 47
 const GENDER = 'M'
 const NAME = 'Elias Ryker'
 
+jest.mock('../dal.js', () => {
+    return jest.fn().mockImplementation(() => ({
+        getAllStacksAsync: jest.fn().mockReturnValue(new Promise(() => [])),
+        getAllEnvelopesAsync: jest.fn().mockReturnValue(new Promise(() =>[])),
+        createAsync: jest.fn().mockReturnValue({
+            corticalStackId: 1,
+            envelopeId: 1,
+        }),
+    }))
+})
+
 beforeEach(() => {
     clinicDependency.getClinic = jest.fn().mockReturnValue({
         create: jest.fn()
@@ -14,7 +25,7 @@ beforeEach(() => {
 })
 
 describe('Digitize action', () => {
-    it('When data is fine', (done) => {
+    it('When data is fine', async () => {
         const query = {
             gender: GENDER,
             age: AGE,
@@ -42,22 +53,16 @@ describe('Digitize action', () => {
             create
         })
 
-        request(app)
-            .get('/digitize')
-            .query(query)
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .expect(response => {
-                expect(response.body).toEqual(expectedResponseBody)
-                expect(create).toHaveBeenCalledTimes(1)
-                expect(create).toHaveBeenCalledWith(
-                    expectedResponseBody.corticalStack.id,
-                    expectedResponseBody.envelope.id,
-                    GENDER,
-                    NAME,
-                    AGE
-                )
-            })
-            .end(done)
+        const res = await request(app).get('/digitize').query(query)
+        expect(res.status).toBe(200)
+        expect(res.body).toEqual(expectedResponseBody)
+        expect(create).toHaveBeenCalledTimes(1)
+        expect(create).toHaveBeenCalledWith(
+            expectedResponseBody.corticalStack.id,
+            expectedResponseBody.envelope.id,
+            GENDER,
+            NAME,
+            AGE
+        )
     })
 })
